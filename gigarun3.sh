@@ -1,1 +1,1 @@
-./shuffle -memory 4.0 -verbose 2 < cooccurrence.giga.bin > cooccurrence.shuf.giga.bin 
+./shuffle -memory 20.0 -verbose 2 < cooccurrence.giga.bin > cooccurrence.shuf.giga.bin 
