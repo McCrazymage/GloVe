@@ -131,11 +131,17 @@ int get_counts() {
     fprintf(stderr, "BUILDING VOCABULARY\n");
     if(verbose > 1) fprintf(stderr, "Processed %lld tokens.", i);
     sprintf(format,"%%%ds",MAX_STRING_LENGTH);
+    //format是长度最多一千1000的字符串，也就是限制了一个单词最长1000个字符，不停地接收来自标准输入的最多1000个字符组成的单词。
     while(fscanf(fid, format, str) != EOF) { // Insert all tokens into hashtable
+        //如果已经有了就增加hash table中该单词数量，如果没有就加入进去
         hashinsert(vocab_hash, str);
         if(((++i)%100000) == 0) if(verbose > 1) fprintf(stderr,"\033[11G%lld tokens.", i);
     }
+    //到这里读就读完了
     if(verbose > 1) fprintf(stderr, "\033[0GProcessed %lld tokens.\n", i);
+    
+    
+    //把hash中的词都转移到vocab中去
     vocab = malloc(sizeof(VOCAB) * vocab_size);
     for(i = 0; i < TSIZE; i++) { // Migrate vocab to array
         htmp = vocab_hash[i];
@@ -155,9 +161,13 @@ int get_counts() {
         // If the vocabulary exceeds limit, first sort full vocab by frequency without alphabetical tie-breaks.
         // This results in pseudo-random ordering for words with same frequency, so that when truncated, the words span whole alphabet
         qsort(vocab, j, sizeof(VOCAB), CompareVocab);
+        //如果没有设置词库最大值，那么词库大小就是实际值，指导输出
     else max_vocab = j;
+    
+    //再按照字母排序
     qsort(vocab, max_vocab, sizeof(VOCAB), CompareVocabTie); //After (possibly) truncating, sort (possibly again), breaking ties alphabetically
     
+    //输出每一个词和计数
     for(i = 0; i < max_vocab; i++) {
         if(vocab[i].count < min_count) { // If a minimum frequency cutoff exists, truncate vocabulary
             if(verbose > 0) fprintf(stderr, "Truncating vocabulary at min count %lld.\n",min_count);
